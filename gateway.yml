@@ -1,0 +1,70 @@
+spring:
+  profiles:
+    active: docker
+
+---
+spring:
+  profiles: cloud
+server:
+  port: 10000
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+eureka:
+  instance:
+    hostname: gateway-77.cfapps.io
+    nonSecurePort: 80
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://discovery-77.cfapps.io/eureka/
+
+---
+spring:
+  profiles: docker
+  application:
+    name: gateway
+server:
+  port: 9999
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+eureka:
+  client:
+    region: default
+    registryFetchIntervalSeconds: 5    
+ribbon:
+  eureka:
+    enabled: true
+
+sidecar:
+  port: 80
+# Proxies the calls to http://localhost:8080/api/* to our REST service at http://localhost:8081/*
+ # and automatically includes our OAuth2 token in the request headers
+zuul:
+  routes:
+    internalApi:
+      path: /search/**
+      url: http://localhost:8081
+    discovery:
+      path: /discovery/**
+      url: http://localhost:8761  
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 600000               
+    externalApi:
+      path: /external/**
+      url: http://some.external.webservice/
+      
+
+
