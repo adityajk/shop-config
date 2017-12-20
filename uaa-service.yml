@@ -1,0 +1,49 @@
+spring:
+  profiles:
+    active: docker
+---
+spring:
+  profiles: cloud
+  jpa:
+    show_sql: false
+    database: MYSQL
+    hibernate:
+      ddl-auto: none
+server:
+  port: 9090
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-77.cfapps.io/eureka/
+  instance:
+    hostname: uaa-service-77.cfapps.io
+    nonSecurePort: 80
+ribbon:
+  eureka:
+    enabled: true
+---
+spring:
+  profiles: docker
+  application:
+    name: uaa-service
+server:
+  port: 9090
+  contextPath: /auth
+eureka:
+  client:
+    region: default
+    registryFetchIntervalSeconds: 5  
+
+
+# Certificate settings for enabling JWT tokens
+jwt:
+  certificate:
+    store:
+      file: classpath:/certificate/shop-auth-server.jks
+      password: storepassword
+    key:
+      alias: myauthserver
+      password: keypassword 
+
+logging:
+  level.org.springframework.security: DEBUG      
